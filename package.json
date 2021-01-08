@@ -1,0 +1,17 @@
+{
+  "name": "divergebot",
+  "version": "1.0.0",
+  "description": "A github action that nags about diverging branches and unmerged commits",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@actions/core": "^1.2.6",
+    "@actions/github": "^4.0.0",
+    "@slack/webhook": "^5.0.4"
+  }
+}
