@@ -1,15 +1,24 @@
 name: "divergebot"
-description: "Nag collegues about diverging branches and unmerged commits"
+description: "Bot nagging collegues about diverging branches and unmerged commits"
 inputs:
   slack_webhook_url: # id of input
     description: "Slack webhook url for outgoing notifications"
     required: true
-  braches_to_compare:
+  branches_to_compare:
     description: "An array of branches to compare. Format: `['release/4.1...master', 'release/3.3...master', ...]`)"
     required: true
-outputs:
-  time: # id of output
-    description: "The time we greeted you"
+  github_api_token:
+    description: "The github API token"
+    required: true
+    #default
+  github_owner:
+    description: "The github organisation/owner"
+    required: true
+    #default
+  github_repo:
+    description: "The github repository"
+    required: true
+    #default
 runs:
   using: "node12"
   main: "index.js"

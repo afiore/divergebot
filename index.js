@@ -80,30 +80,31 @@ function buildMessage(owner, repo, base, head, commitCountsByLogin) {
   return payload
 }
 
+branchesToCompare = core.getInput("branches_to_compare")
 
-const apiToken = "61ff09bd97e6d4442971c0c8ab96cebe8bbc2e6d"
-const owner = "lensesio-dev"
-const repo = "lenses-core"
-const base = "master"
-const head = "release/4.1"
-const webhookUrl = "https://hooks.slack.com/services/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"
+branchesToCompare.forEach((toCompare) => {
+  const [head, base, ...rest] = toCompare.split("...")
+  const apiToken = core.getInput("github_api_token")
+  const owner = core.getInput("github_owner")
+  const repo = core.getInput("github_repo")
+  const webhookUrl = core.getInput("slack_webhook_url")
 
-async function apiCall(apiToken, owner, repo, base, head) {
-  const octokit = github.getOctokit(apiToken)
-  return await octokit.request("GET /repos/{owner}/{repo}/compare/{base}...{head}", {
-    owner: owner,
-    repo: repo,
-    base: head,
-    head: base,
+  async function apiCall(apiToken, owner, repo, base, head) {
+    const octokit = github.getOctokit(apiToken)
+    return await octokit.request("GET /repos/{owner}/{repo}/compare/{base}...{head}", {
+      owner: owner,
+      repo: repo,
+      base: base,
+      head: head,
+    })
+  }
+  apiCall(apiToken, owner, repo, base, head).then((response) => {
+    const counts = commitCountsByLogin(response)
+    const slackMessage = buildMessage(owner, repo, base, head, counts)
+    const slack = new IncomingWebhook(webhookUrl)
+    slack.send(slackMessage)
+  }, err => {
+    console.error(err)
+    core.setFailed(err.message)
   })
-}
-
-apiCall(apiToken, owner, repo, base, head).then((response) => {
-  const counts = commitCountsByLogin(response)
-  const slackMessage = buildMessage(owner, repo, base, head, counts)
-  const slack = new IncomingWebhook(webhookUrl)
-  slack.send(slackMessage)
-
-}, console.error)
-
-
+})
