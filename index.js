@@ -96,8 +96,8 @@ branchesToCompare.forEach((toCompare) => {
   const apiToken = core.getInput("github_api_token")
   const ownerRepo = core.getInput("github_owner_repo")
 
-  const [head, base, ..._] = toCompare.split("...")
-  const [owner, repo, ..._] = ownerRepo.split("/")
+  const [head, base] = toCompare.split("...")
+  const [owner, repo] = ownerRepo.split("/")
 
   const webhookUrl = core.getInput("slack_webhook_url")
 
