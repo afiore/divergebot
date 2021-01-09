@@ -80,7 +80,7 @@ function buildMessage(owner, repo, base, head, commitCountsByLogin) {
   return payload
 }
 
-branchesToCompare = core.getInput("branches_to_compare")
+branchesToCompare = JSON.parse(core.getInput("branches_to_compare"))
 
 branchesToCompare.forEach((toCompare) => {
   const [head, base, ...rest] = toCompare.split("...")

@@ -1,11 +1,11 @@
-name: "divergebot"
+name: Divergebot
 description: "Bot nagging collegues about diverging branches and unmerged commits"
 inputs:
   slack_webhook_url: # id of input
     description: "Slack webhook url for outgoing notifications"
     required: true
   branches_to_compare:
-    description: "An array of branches to compare. Format: `['release/4.1...master', 'release/3.3...master', ...]`)"
+    description: 'A JSON-encoded array of branches to compare. Eg: ["release/4.1...master", "release/3.3...master"])'
     required: true
   github_api_token:
     description: "The github API token"
