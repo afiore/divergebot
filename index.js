@@ -100,9 +100,11 @@ branchesToCompare.forEach((toCompare) => {
   }
   apiCall(apiToken, owner, repo, base, head).then((response) => {
     const counts = commitCountsByLogin(response)
-    const slackMessage = buildMessage(owner, repo, base, head, counts)
-    const slack = new IncomingWebhook(webhookUrl)
-    slack.send(slackMessage)
+    if (counts.length > 0) {
+      const slackMessage = buildMessage(owner, repo, base, head, counts)
+      const slack = new IncomingWebhook(webhookUrl)
+      slack.send(slackMessage).catch(err => core.setFailed(err))
+    }
   }, err => {
     console.error(err)
     core.setFailed(err.message)
