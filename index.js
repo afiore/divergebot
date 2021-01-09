@@ -2,6 +2,16 @@ const core = require('@actions/core');
 const github = require('@actions/github');
 const { IncomingWebhook } = require('@slack/webhook');
 
+async function apiCall(apiToken, owner, repo, base, head) {
+  const octokit = github.getOctokit(apiToken)
+  return await octokit.request("GET /repos/{owner}/{repo}/compare/{base}...{head}", {
+    owner: owner,
+    repo: repo,
+    base: base,
+    head: head,
+  })
+}
+
 function commitCountsByLogin(result) {
   const commitCountsByLogin = result.data.commits.reduce((commitCounts, commit) => {
     if (commit.author !== null) {
@@ -83,23 +93,17 @@ function buildMessage(owner, repo, base, head, commitCountsByLogin) {
 branchesToCompare = JSON.parse(core.getInput("branches_to_compare"))
 
 branchesToCompare.forEach((toCompare) => {
-  const [head, base, ...rest] = toCompare.split("...")
   const apiToken = core.getInput("github_api_token")
-  const owner = core.getInput("github_owner")
-  const repo = core.getInput("github_repo")
+  const ownerRepo = core.getInput("github_owner_repo")
+
+  const [head, base, ...rest] = toCompare.split("...")
+  const [owner, repo, ...rest] = ownerRepo.split("/")
+
   const webhookUrl = core.getInput("slack_webhook_url")
 
-  async function apiCall(apiToken, owner, repo, base, head) {
-    const octokit = github.getOctokit(apiToken)
-    return await octokit.request("GET /repos/{owner}/{repo}/compare/{base}...{head}", {
-      owner: owner,
-      repo: repo,
-      base: base,
-      head: head,
-    })
-  }
   apiCall(apiToken, owner, repo, base, head).then((response) => {
     const counts = commitCountsByLogin(response)
+    core.setOutput("diverged_commit_count", counts.length)
     if (counts.length > 0) {
       const slackMessage = buildMessage(owner, repo, base, head, counts)
       const slack = new IncomingWebhook(webhookUrl)
