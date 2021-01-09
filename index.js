@@ -103,7 +103,6 @@ branchesToCompare.forEach((toCompare) => {
 
   apiCall(apiToken, owner, repo, base, head).then((response) => {
     const counts = commitCountsByLogin(response)
-    core.setOutput("diverged_commit_count", counts.length)
     if (counts.length > 0) {
       const slackMessage = buildMessage(owner, repo, base, head, counts)
       const slack = new IncomingWebhook(webhookUrl)

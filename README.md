@@ -1,4 +1,4 @@
-## Divergebot-action
+# Divergebot-action
 
 A Github action to nag your colleagues about diverging branches and unmerged commits.
 
@@ -50,3 +50,11 @@ The Github API token to be used in order to compare the two branches
 ##### github_owner_repo
 
 A string identifying the Github owner and repository, separated by a slash (e.g. `afiore/divergebot`).
+
+## Local development
+
+Github action inputs are implemented as environment variables, so it is possible to test this action locally as follows:
+
+```bash
+INPUT_BRANCHES_TO_COMPARE='["release/other...main"]' INPUT_GITHUB_API_TOKEN=$MY_TOKEN INPUT_SLACK_WEBHOOK_URL=$MY_WEBHOOK_URL INPUT_GITHUB_OWNER_REPO=owner/repo node index.js
+```
