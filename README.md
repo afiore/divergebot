@@ -24,9 +24,10 @@ jobs:
       - uses: afiore/divergebot@v0.3.0
         with:
           branches_to_compare: '["main...release/2.0.x", "main...release/3.0.x"]'
-          slack_webhook_url: ${{ secret.DIVERGEBOT_SLACK_WEBHOOK_URL }}
           github_api_token: ${{ secrets.GITHUB_TOKEN }}
           github_owner_repo: ${{ env.GITHUB_REPOSITORY }}
+          slack_webhook_url: ${{ secret.DIVERGEBOT_SLACK_WEBHOOK_URL }}
+          slack_user_ids: '{"bob-github-login": "UP9ZKK410", "jane-github-login": "UB1ZGG221", ...}'
 ```
 
 Here we configure the action to be run as part of a workflow scheduled daily a 8am, comparing the `main` branch with two release branches of the current repository.
@@ -45,11 +46,16 @@ have diverged.
 
 ##### github_api_token
 
-The Github API token to be used in order to compare the two branches
+The Github API token to be used in order to compare the two branches.
 
 ##### github_owner_repo
 
 A string identifying the Github owner and repository, separated by a slash (e.g. `afiore/divergebot`).
+
+##### slack_user_ids
+
+A json object allowing to resolve Slack user/member ids by their Github login. If supplied, this optional input will be used to enhance the generated slack message
+with an explicit mention of the user associated to the commit. 
 
 ## Local development
 

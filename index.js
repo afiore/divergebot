@@ -40,7 +40,7 @@ function commitCountsByLogin(result) {
   })
 }
 
-function buildMessage(owner, repo, base, head, commitCountsByLogin) {
+function buildMessage(owner, repo, base, head, commitCountsByLogin, slackUserIds) {
   const commitCount = commitCountsByLogin.reduce((count, c) => count + c.count, 0)
   const payload = {
     "text": `Branch ${head} of ${repo} has diverged from base branch ${base} of ${commitCount} commits`,
@@ -60,7 +60,9 @@ function buildMessage(owner, repo, base, head, commitCountsByLogin) {
     ]
   }
 
-  commitCountsByLogin.forEach(c =>
+  commitCountsByLogin.forEach(c => {
+    const slackHandleOrGHlogin = slackUserIds[c.login] ? `<@${slackUserIds[c.login]}>` : c.login
+    console.log(`got ${slackHandleOrGHlogin} by looking up ${c.login} into ${slackUserIds}`)
     payload.blocks.push({
       "type": "context",
       "elements": [
@@ -71,18 +73,24 @@ function buildMessage(owner, repo, base, head, commitCountsByLogin) {
         },
         {
           "type": "mrkdwn",
-          "text": `*${c.login}*: ${c.count} commits`
+          "text": `*${c.login}* ${c.count} commits`
         }
       ]
     })
-  );
+  })
+
+  //Mention at most three committers, for better readability
+  const mentions = commitCountsByLogin
+    .flatMap(c => slackUserIds[c.login] ? [`<@${slackUserIds[c.login]}>`] : [])
+    .slice(0, 3)
+    .join(" ")
 
   payload.blocks.push({ "type": "divider" })
   payload.blocks.push({
     "type": "section",
     "text": {
       "type": "mrkdwn",
-      "text": `👉 <https://github.com/${owner}/${repo}/compare/${head}...${base}|Compare branches on Github and open a PR!>`
+      "text": `${mentions} 👉 <https://github.com/${owner}/${repo}/compare/${head}...${base}|Compare branches on Github and open a PR!>`
     }
   })
 
@@ -93,20 +101,27 @@ function buildMessage(owner, repo, base, head, commitCountsByLogin) {
 branchesToCompare = JSON.parse(core.getInput("branches_to_compare"))
 
 branchesToCompare.forEach((toCompare) => {
-  const apiToken = core.getInput("github_api_token")
-  const ownerRepo = core.getInput("github_owner_repo")
+  var slackUserIds
+  const apiToken = core.getInput("github_api_token", { required: true })
+  const ownerRepo = core.getInput("github_owner_repo", { required: true })
 
   const [head, base] = toCompare.split("...")
   const [owner, repo] = ownerRepo.split("/")
 
-  const webhookUrl = core.getInput("slack_webhook_url")
+  const webhookUrl = core.getInput("slack_webhook_url", { required: true })
+  if (core.getInput("slack_user_ids")) {
+    slackUserIds = JSON.parse(core.getInput("slack_user_ids"))
+  } else {
+    slackUserIds = {}
+  }
 
   apiCall(apiToken, owner, repo, base, head).then((response) => {
     const counts = commitCountsByLogin(response)
     if (counts.length > 0) {
-      const slackMessage = buildMessage(owner, repo, base, head, counts)
+      const slackMessage = buildMessage(owner, repo, base, head, counts, slackUserIds)
+
       const slack = new IncomingWebhook(webhookUrl)
-      slack.send(slackMessage).catch(err => core.setFailed(err))
+      slack.send(slackMessage).catch(err => core.setFailed(err.message))
     }
   }, err => {
     console.error(err)
