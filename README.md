@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo "running divergebot"
-      - uses: afiore/divergebot@v0.3.0
+      - uses: afiore/divergebot@v0.7.0
         with:
           branches_to_compare: '["main...release/2.0.x", "main...release/3.0.x"]'
           github_api_token: ${{ secrets.GITHUB_TOKEN }}
