@@ -13,7 +13,7 @@ inputs:
   github_owner_repo:
     description: "The github owner/repo: e.g. `afiore/divergebot`"
     required: true
-  slack_handles:
+  slack_user_ids:
     description: 'A json object allowing to resolve Slack user handles by their Github login. e.g. {"bob-github-login": "UP9ZKK410", "jane-github-login": "UB1ZGG221", ...}'
     required: false
 runs:

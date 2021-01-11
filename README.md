@@ -1,11 +1,12 @@
 # Divergebot-action
 
-A Github action to nag your colleagues about diverging branches and unmerged commits.
+A Github action that nags your colleagues about diverging branches and unmerged commits.
 
-Given a list of head...base branches to compare, Divergebot notifies a slack webhook with a breakdown
-of the umerged commit counts, grouped by author whenever it detect that the two branches have diverged. 
+Given a list of head...base branches to compare, Divergebot notifies a Slack webhook with a breakdown
+of the umerged commit counts whenever it detect that the two branches have diverged. 
 In projects where multiple, long-lived branches (e.g. `release/2.3`, `release/2.4`) exist, this can be 
-an effective mechanism to encourage contributors to merge their commits across all the relevant branches.
+an effective mechanism to encourage contributors to merge their commits across all the relevant branches
+in a timely and proactive fashion.
 
 ## Usage
 
@@ -31,8 +32,7 @@ jobs:
 ```
 
 Here we configure the action to be run as part of a workflow scheduled daily a 8am, comparing the `main` branch with two release branches of the current repository.
- As we add the `workflow_dispatch` event, we will also be able to trigger this workflow manually from the Github UI.
-
+We add the `workflow_dispatch` event, we will also be able to trigger this workflow manually from the Github UI.
 ### Inputs
 
 ##### branches_to_compare

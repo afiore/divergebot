@@ -62,7 +62,7 @@ function buildMessage(owner, repo, base, head, commitCountsByLogin, slackUserIds
 
   commitCountsByLogin.forEach(c => {
     const slackHandleOrGHlogin = slackUserIds[c.login] ? `<@${slackUserIds[c.login]}>` : c.login
-    console.log(`got ${slackHandleOrGHlogin} by looking up ${c.login} into ${slackUserIds}`)
+    console.debug(`got ${slackHandleOrGHlogin} by looking up ${c.login} into ${slackUserIds}`)
     payload.blocks.push({
       "type": "context",
       "elements": [
@@ -105,7 +105,7 @@ branchesToCompare.forEach((toCompare) => {
   const apiToken = core.getInput("github_api_token", { required: true })
   const ownerRepo = core.getInput("github_owner_repo", { required: true })
 
-  const [head, base] = toCompare.split("...")
+  const [base, head] = toCompare.split("...")
   const [owner, repo] = ownerRepo.split("/")
 
   const webhookUrl = core.getInput("slack_webhook_url", { required: true })
