@@ -90,7 +90,7 @@ function buildMessage(owner, repo, base, head, commitCountsByLogin, slackUserIds
     "type": "section",
     "text": {
       "type": "mrkdwn",
-      "text": `${mentions} 👉 <https://github.com/${owner}/${repo}/compare/${head}...${base}|Compare branches on Github and open a PR!>`
+      "text": `${mentions} 👉 <https://github.com/${owner}/${repo}/compare/${base}...${head}|Compare branches on Github and open a PR!>`
     }
   })
 
