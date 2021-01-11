@@ -46,7 +46,7 @@ function buildMessage(owner, repo, base, head, commitCountsByLogin, slackUserIds
     "text": `Branch ${head} of ${repo} has diverged from base branch ${base} of ${commitCount} commits`,
     "blocks": [
       {
-        "type": "header",
+        "type": "section",
         "text": {
           "type": "plain_text",
           "text": `:warning: Branch ${head} of ${repo} has diverged from base branch ${base} of ${commitCount} commits`,
